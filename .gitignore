@@ -1,4 +1,8 @@
 
+### Custom Ignored Files ###
+data/
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/flask,python,pycharm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,python,pycharm+all
 
