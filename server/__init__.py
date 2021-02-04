@@ -4,6 +4,6 @@ from graph.graph import create_indexes
 from server.recommendation import recommendation
 
 app = Flask(__name__)
-app.register_blueprint(recommendation, url_prefix='/recommendations')
+app.register_blueprint(recommendation, url_prefix='/recommendation')
 
 create_indexes()
