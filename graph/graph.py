@@ -1,3 +1,4 @@
+import ast
 import os
 
 import click
@@ -5,31 +6,29 @@ import pandas as pd
 
 current_file = os.path.abspath(os.path.dirname(__file__))
 
-DATA_PATH = '../data/tweets-dedupe.csv'
-
-LEFT_PARTY = "UserID"
-RIGHT_PARTY = "TweetID"
+DATA_PATH = '../data'
 ADJACENCY_LIST = "Adjacency List"
 LEFT_INDEX = pd.DataFrame()
 RIGHT_INDEX = pd.DataFrame()
 
 
-def create_indexes():
+def load_indexes(hash_function: str = "", partition_number: str = ""):
     global LEFT_INDEX
     global RIGHT_INDEX
-    csv_filename = os.path.join(current_file, DATA_PATH)
-    df = pd.read_csv(csv_filename,
-                     names=[LEFT_PARTY, RIGHT_PARTY, "Interaction"])
-
-    LEFT_INDEX = df.groupby(LEFT_PARTY)[RIGHT_PARTY].apply(list).reset_index(name=ADJACENCY_LIST)
-    LEFT_INDEX.set_index(LEFT_PARTY, inplace=True)
-    click.echo("left index ready")
-
-    RIGHT_INDEX = df.groupby(RIGHT_PARTY)[LEFT_PARTY].apply(list).reset_index(name=ADJACENCY_LIST)
-    RIGHT_INDEX.set_index(RIGHT_PARTY, inplace=True)
-    click.echo("right index ready")
-
-    del df
+    sides = ["left", "right"]
+    path_to_partition = ""
+    if hash_function != "" and partition_number != "":
+        path_to_partition = f"{hash_function}/partition_{partition_number}/"
+    for side in sides:
+        path_to_index_file = f"{DATA_PATH}/{path_to_partition}{side}_index.csv"
+        index_csv = os.path.join(current_file, path_to_index_file)
+        side_index = pd.read_csv(index_csv, index_col=0)
+        side_index[ADJACENCY_LIST] = side_index[ADJACENCY_LIST].map(ast.literal_eval)
+        if side == "left":
+            LEFT_INDEX = side_index
+        else:
+            RIGHT_INDEX = side_index
+        click.echo(f"finish loading the {side} index")
 
 
 def get_left_node_neighbors(node: int) -> list:
