@@ -14,3 +14,14 @@ def salsa(user_id: int):
 
     recommendations = Salsa(user_id, limit, walks, walks_length, reset_probability).compute()
     return jsonify(recommendations)
+
+
+@recommendation.route('/salsa/tweet/<int:tweet_id>')
+def salsa_for_tweets(tweet_id: int):
+    limit = request.args.get('limit', default=10, type=int)
+    walks = request.args.get('walks', default=1000, type=int)
+    walks_length = request.args.get('walk_length', default=100, type=int)
+    reset_probability = request.args.get('reset_probability', default=0.1, type=float)
+
+    recommendations = Salsa(tweet_id, limit, walks, walks_length, reset_probability).compute(for_user=False)
+    return jsonify(recommendations)

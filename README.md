@@ -3,7 +3,7 @@ Small piece of code simulating the SALSA algorithm.
 ## Deployment
 Build image from Dockerfile:
 ```shell
-docker build -t raminqaf/salsa:1.0 .
+docker build -t raminqaf/salsa:1.1 .
 ```
 ## Usage
 ### Local
@@ -15,5 +15,5 @@ flas run
 ### Docker
 Run image from the root of the project:
 ```shell
-docker run -p 5000:80 -v $(pwd)/data:/app/data --name salsa raminqaf/salsa:1.0 
+docker run -p 5000:80 -v $(pwd)/data:/app/data --name salsa raminqaf/salsa:1.1
 ```
