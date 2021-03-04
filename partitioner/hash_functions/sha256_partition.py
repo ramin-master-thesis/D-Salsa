@@ -1,6 +1,6 @@
 import hashlib
 
-from partitioner.partition_base_class import PartitionBase
+from partitioner.hash_functions.partition_base_class import PartitionBase
 
 
 class SHA256Partition(PartitionBase):

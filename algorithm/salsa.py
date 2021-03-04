@@ -1,7 +1,7 @@
 from enum import Enum
 from random import randrange, uniform
 
-from graph.graph import get_left_node_neighbors, get_right_node_neighbors
+from graph.bipartite_graph import get_left_node_neighbors, get_right_node_neighbors
 
 
 class Side(Enum):

@@ -1,4 +1,4 @@
-from partitioner.partition_base_class import PartitionBase
+from partitioner.hash_functions.partition_base_class import PartitionBase
 
 
 class ModuloPartition(PartitionBase):

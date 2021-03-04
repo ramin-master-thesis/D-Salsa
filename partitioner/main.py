@@ -4,11 +4,9 @@ import os
 import click
 import numpy as np
 import pandas as pd
-from pandas import Series
 
-from partitioner.modulo_partition import ModuloPartition
-from partitioner.partition_base_class import PartitionBase
-from partitioner.sha256_partition import SHA256Partition
+from partitioner.hash_functions.modulo_partition import ModuloPartition
+from partitioner.hash_functions.partition_base_class import PartitionBase
 
 
 def partition_index(partition_method: PartitionBase):
@@ -53,5 +51,4 @@ def partition_adjacency_list(partition_method: PartitionBase, adjacency_list: li
 
 
 if __name__ == "__main__":
-    partition_index(partition_method=SHA256Partition(2))
-    # partition_index(partition_method=ModuloPartition(2))
+    partition_index(partition_method=ModuloPartition(2))

@@ -4,10 +4,10 @@ import os
 import click
 import pandas as pd
 
-current_file = os.path.abspath(os.path.dirname(__file__))
+from graph import current_file
 
-DATA_PATH = '../data'
-ADJACENCY_LIST = "Adjacency List"
+DATA_FOLDER = '../data'
+ADJACENCY_LIST = "adjacency_list"
 LEFT_INDEX = pd.DataFrame()
 RIGHT_INDEX = pd.DataFrame()
 
@@ -20,7 +20,7 @@ def load_indexes(hash_function: str = "", partition_number: str = ""):
     if hash_function != "" and partition_number != "":
         path_to_partition = f"{hash_function}/partition_{partition_number}/"
     for side in sides:
-        path_to_index_file = f"{DATA_PATH}/{path_to_partition}{side}_index.csv"
+        path_to_index_file = f"{DATA_FOLDER}/{path_to_partition}{side}_index_new.csv"
         index_csv = os.path.join(current_file, path_to_index_file)
         side_index = pd.read_csv(index_csv, index_col=0)
         side_index[ADJACENCY_LIST] = side_index[ADJACENCY_LIST].map(ast.literal_eval)
