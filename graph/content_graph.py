@@ -4,7 +4,7 @@ import os
 import click
 import pandas as pd
 
-from graph import current_file
+from graph import current_directory
 
 DATA_FOLDER = '../data'
 CONTENT = "content"
@@ -14,7 +14,7 @@ CONTENT_INDEX = pd.DataFrame()
 def load_content_index():
     global CONTENT_INDEX
     path_to_index_file = f"{DATA_FOLDER}/content_index_new.tsv"
-    index_csv = os.path.join(current_file, path_to_index_file)
+    index_csv = os.path.join(current_directory, path_to_index_file)
     side_index = pd.read_csv(index_csv, sep='\t', index_col=0)
     CONTENT_INDEX = side_index
     click.echo("Finish loading content index")

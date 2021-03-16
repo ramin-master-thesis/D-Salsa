@@ -1,4 +1,4 @@
-FROM python:3.9.1-slim-buster
+FROM python:3.8.5-slim-buster
 
 
 WORKDIR /app
@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 EXPOSE 80
 ENV FLASK_APP=salsa
 
-CMD ["python", "-m", "server.app", "--port", "80"]
+CMD ["python", "-m", "server.app", "--port", "5001"]

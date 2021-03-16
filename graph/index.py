@@ -4,7 +4,7 @@ import click
 import pandas as pd
 from pandas import DataFrame
 
-from graph.bipartite_graph import current_file
+from graph.bipartite_graph import current_directory
 
 DATA_FOLDER = '../data'
 FILE = 'tweets.tsv'
@@ -16,7 +16,7 @@ ADJACENCY_LIST = "adjacency_list"
 
 def __read_data(usecols: list, dtype: dict) -> DataFrame():
     sep = ',' if 'csv' in FILE else '\t'
-    csv_filename = os.path.join(current_file, DATA_FOLDER, FILE)
+    csv_filename = os.path.join(current_directory, DATA_FOLDER, FILE)
     df = pd.read_csv(csv_filename, sep=sep, usecols=usecols, header=0, names=list(dtype.keys()),
                      dtype=dtype)
     return df
