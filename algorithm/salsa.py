@@ -109,4 +109,4 @@ class Salsa:
     def __clean_recommendations(self, known_nodes):
         not_visited_nodes = {k: v for k, v in self.total_right_node_visits.items() if k not in known_nodes}
         sorted_nodes = dict(sorted(not_visited_nodes.items(), key=lambda item: item[1], reverse=True))
-        return list(sorted_nodes.keys())[:self.limit]
+        return list(sorted_nodes.items())[:self.limit]

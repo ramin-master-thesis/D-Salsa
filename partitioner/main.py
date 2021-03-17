@@ -7,6 +7,7 @@ import pandas as pd
 
 from partitioner.hash_functions.modulo_partition import ModuloPartition
 from partitioner.hash_functions.partition_base_class import PartitionBase
+from partitioner.hash_functions.single_partition import SinglePartition
 
 
 def partition_index(partition_method: PartitionBase):
@@ -25,7 +26,7 @@ def partition_index(partition_method: PartitionBase):
             partitions.append(partition)
 
         df_index['partition_number'] = np.array(partitions)
-        for i in range(partition_method.partitions):
+        for i in range(partition_method.partition_count):
             partition_folder = f"{partition_method_folder}/partition_{i}"
             if not os.path.isdir(partition_folder):
                 os.mkdir(partition_folder)
@@ -50,5 +51,28 @@ def partition_adjacency_list(partition_method: PartitionBase, adjacency_list: li
     return new_list
 
 
+def partition_data(partition_method: PartitionBase):
+    click.echo(
+        f"Starting to partition data for partition method {partition_method.name} and num of partition(s) {partition_method.partition_count}")
+    partition_method_folder = f"../data/{partition_method.name}"
+    if not os.path.isdir(partition_method_folder):
+        os.mkdir(partition_method_folder)
+    df_index = pd.read_csv(f"../data/tweets-dump.tsv", sep="\t", usecols=[0, 1, 4], lineterminator='\n',
+                           names=["user_id", "tweet_id", "content"], header=None, error_bad_lines=False)
+
+    df_index["partition"] = df_index.apply(lambda x: partition_method.calculate_partition(x["tweet_id"]), axis=1)
+    for num in range(partition_method.partition_count):
+        partition_df = df_index[df_index["partition"] == num]
+
+        partition_df.to_csv(
+            f"{partition_method_folder}/partition_{num}/tweets.tsv",
+            columns=["user_id", "tweet_id", "content"],
+            sep='\t',
+            encoding='utf-8',
+            index=False
+        )
+
+
 if __name__ == "__main__":
-    partition_index(partition_method=ModuloPartition(2))
+    partition_data(partition_method=SinglePartition())
+    partition_data(partition_method=ModuloPartition(2))

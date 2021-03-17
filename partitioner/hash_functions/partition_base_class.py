@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 class PartitionBase(ABC):
     name: str
 
-    def __init__(self, partitions):
-        self.partitions = partitions
+    def __init__(self, partition_count):
+        self.partition_count = partition_count
         super().__init__()
 
     @abstractmethod
@@ -15,5 +15,5 @@ class PartitionBase(ABC):
     def __str__(self):
         return (
             f'Name: {self.name}\n'
-            f'partitions: {self.partitions}\n'
+            f'partitions: {self.partition_count}\n'
         ).format(**self.__dict__)

@@ -12,16 +12,14 @@ LEFT_INDEX = pd.DataFrame()
 RIGHT_INDEX = pd.DataFrame()
 
 
-def load_indexes(hash_function: str = "", partition_number: str = ""):
+def load_indexes(partition_method: str = "single_partition", partition_number: int = 0):
     global LEFT_INDEX
     global RIGHT_INDEX
     sides = ["left", "right"]
-    path_to_partition = ""
-    if hash_function != "" and partition_number != "":
-        path_to_partition = f"{hash_function}/partition_{partition_number}/"
+    partition_folder = f"partition_{partition_number}"
     for side in sides:
-        path_to_index_file = f"{DATA_FOLDER}/{path_to_partition}{side}_index_new.csv"
-        index_csv = os.path.join(current_directory, path_to_index_file)
+        index_file = f"{side}_index.csv"
+        index_csv = os.path.join(current_directory, DATA_FOLDER, partition_method, partition_folder, index_file)
         side_index = pd.read_csv(index_csv, index_col=0)
         side_index[ADJACENCY_LIST] = side_index[ADJACENCY_LIST].map(ast.literal_eval)
         if side == "left":

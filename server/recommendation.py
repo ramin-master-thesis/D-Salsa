@@ -8,10 +8,44 @@ recommendation = Blueprint('recommendation', __name__)
 
 @recommendation.route('/salsa/<int:user_id>', methods=['GET'])
 def salsa(user_id: int):
+    """
+    Calls the SALSA algorithm for the given user_id.
+    ---
+    parameters:
+      - name: user_id
+        in: path
+        type: int
+        required: true
+        description: The user identifier
+
+      - name: with_content
+        in: query
+        type: string
+        required: false
+        default: true
+        description: determines if the content or the result id should be returned
+
+    responses:
+      500:
+        description: Error!
+      200:
+        description: A list of top K recommendations
+    """
     limit, reset_probability, walks, walks_length = __init_parameters()
+    with_content = False if request.args.get('content') == 'false' else True
 
     recommendations = Salsa(user_id, limit, walks, walks_length, reset_probability).compute()
-    return jsonify(recommendations)
+    results = []
+    for r in recommendations:
+        results.append({"id": r[0], "hit": r[1]})
+
+    if with_content:
+        results = []
+        for r in recommendations:
+            results.append({"id": r[0], "content": get_content_by_id(r[0]), "hit": r[1]})
+        return jsonify(results)
+
+    return jsonify(results)
 
 
 @recommendation.route('/salsa/tweet/<int:tweet_id>', methods=['GET'])
