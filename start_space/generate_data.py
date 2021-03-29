@@ -1,4 +1,3 @@
-import click
 import pandas as pd
 import requests
 from pandas import DataFrame
@@ -24,7 +23,13 @@ def __get_recommendations_content(identifier: int) -> list:
 
 
 def __get_identifiers():
-    identifiers = pd.read_csv(f"{current_directory}/../data/right_index_new.csv", usecols=[0])
+    identifiers = pd.read_csv(f"{current_directory}/../data/StarSpace_data/tweets-dump-train.tsv",
+                              sep='\t',
+                              lineterminator="\n",
+                              usecols=[1],
+                              names=["tweet_id"])
+
+    identifiers.drop_duplicates(keep="first", inplace=True)
     return identifiers
 
 
@@ -34,15 +39,15 @@ def __generate_train_test_data(df: DataFrame(), is_train=True):
         content = __get_recommendations_content(row[0])
         formatted_content = '\t'.join(content)
         training_data.append(formatted_content)
-    file_name = "twitter_train130k.txt" if is_train else "twitter_test30k.txt"
-    with open(f"{current_directory}/../data/{file_name}", "w") as outfile:
+    file_name = "twitter_train.txt" if is_train else "twitter_test.txt"
+    with open(f"{current_directory}/../data/StarSpace_data/{file_name}", "w") as outfile:
         outfile.write("\n".join(training_data))
 
 
 if __name__ == "__main__":
     df_ids = __get_identifiers()
-    train, test = train_test_split(df_ids, test_size=0.2)
-    __generate_train_test_data(test, is_train=False)
-    click.echo("Finish generating test data")
-    __generate_train_test_data(train, is_train=True)
-    click.echo("Finish generating train data")
+    train, test = train_test_split(df_ids, test_size=0.1)
+    # __generate_train_test_data(test, is_train=False)
+    # click.echo("Finish generating test data")
+    # __generate_train_test_data(train, is_train=True)
+    # click.echo("Finish generating train data")

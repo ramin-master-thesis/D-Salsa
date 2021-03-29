@@ -1,4 +1,3 @@
-import ast
 import os
 
 import click
@@ -18,10 +17,9 @@ def load_indexes(partition_method: str = "single_partition", partition_number: i
     sides = ["left", "right"]
     partition_folder = f"partition_{partition_number}"
     for side in sides:
-        index_file = f"{side}_index.csv"
+        index_file = f"{side}_index.gzip"
         index_csv = os.path.join(current_directory, DATA_FOLDER, partition_method, partition_folder, index_file)
-        side_index = pd.read_csv(index_csv, index_col=0)
-        side_index[ADJACENCY_LIST] = side_index[ADJACENCY_LIST].map(ast.literal_eval)
+        side_index = pd.read_parquet(index_csv)
         if side == "left":
             LEFT_INDEX = side_index
         else:
