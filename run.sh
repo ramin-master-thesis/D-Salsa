@@ -14,12 +14,13 @@ _ctrl_c() {
   printf "\n"
 }
 
-#python -m server.app --partition-method single_partition --port 5001
-python -m server.app --partition-method modulo --partition-number 0 --port 5002 &
-python -m server.app --partition-method modulo --partition-number 1 --port 5003 &
+### single_partition
+python3 -m server.app --partition-method single_partition --port 5001 &
 
-python -m server.app --partition-method murmur2 --partition-number 0 --port 5004 &
-python -m server.app --partition-method murmur2 --partition-number 1 --port 5005 &
+### murmur2
+python -m server.app --partition-method murmur2 --partition-number 0 --port 5002 &
+python -m server.app --partition-method murmur2 --partition-number 1 --port 5003 &
 
-python -m server.app --partition-method StarSpace --partition-number 0 --port 5006 &
-python -m server.app --partition-method StarSpace --partition-number 1 --port 5007
+### StarSpace
+python -m server.app --partition-method StarSpace --partition-number 0 --port 5004 &
+python -m server.app --partition-method StarSpace --partition-number 1 --port 5005

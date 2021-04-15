@@ -9,7 +9,7 @@ RUN apt-get update \
 
 RUN pip install -r requirements.txt
 
-EXPOSE 80
+EXPOSE 5000
 ENV FLASK_APP=salsa
 
-CMD ["python", "-m", "server.app", "--port", "5001"]
+CMD ["python", "-m", "server.app", "--port", "5000"]

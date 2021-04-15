@@ -57,12 +57,12 @@ def salsa_for_tweets(tweet_id: int):
     recommendations = Salsa(tweet_id, limit, walks, walks_length, reset_probability).compute(for_user=False)
 
     if should_include_first:
-        recommendations.insert(0, tweet_id)
+        recommendations.insert(0, (tweet_id, 0))
 
     if with_content:
         res = []
         for r in recommendations:
-            res.append(get_content_by_id(r))
+            res.append({"id": r[0], "content": get_content_by_id(r[0]), "hit": r[1]})
         return jsonify(res)
 
     return jsonify(recommendations)

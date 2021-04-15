@@ -15,5 +15,5 @@ flas run
 ### Docker
 Run image from the root of the project:
 ```shell
-docker run -p 5000:80 -v $(pwd)/data:/app/data --name salsa raminqaf/salsa:1.1
+docker run -p 5000:5001 -v $(pwd)/data:/app/data --name salsa raminqaf/salsa:1.1
 ```

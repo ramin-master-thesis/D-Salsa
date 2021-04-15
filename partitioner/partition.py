@@ -25,8 +25,11 @@ def partition_data(partition_method: PartitionBase):
                            lineterminator='\n',
                            names=["user_id", "tweet_id", "content"], header=None)
 
-    df_index["user_id"] = pd.to_numeric(df_index["user_id"])
-    df_index["tweet_id"] = pd.to_numeric(df_index["tweet_id"])
+    df_index.dropna(inplace=True)
+    df_index['user_id'] = df_index['user_id'].astype('int')
+    df_index['tweet_id'] = df_index['tweet_id'].astype('int')
+
+    df_index.drop_duplicates(keep="first", inplace=True)
 
     if isinstance(partition_method, StarSpacePartition):
         df_index["partition"] = df_index.apply(lambda x: partition_method.calculate_partition(x["content"]), axis=1)
@@ -36,9 +39,10 @@ def partition_data(partition_method: PartitionBase):
     else:
         df_index["partition"] = df_index.apply(lambda x: partition_method.calculate_partition(x["tweet_id"]), axis=1)
 
-    return df_index
     # TODO: make it optional
-    # __save_partition_to_file(df_index, partition_method)
+    __save_partition_to_file(df_index, partition_method)
+
+    return df_index
 
 
 def __save_partition_to_file(df_index, partition_method):
@@ -69,36 +73,38 @@ def cli(path_to_file):
 @cli.command()
 def single():
     partition_method = SinglePartition()
-    df_index = partition_data(partition_method=partition_method)
-    create_indices(df_index, partition_method=partition_method)
-    create_content_index(df_index, partition_method=partition_method)
+    df_partition = partition_data(partition_method=partition_method)
+    create_indices(df_partition, partition_method=partition_method)
+    create_content_index(df_partition, partition_method=partition_method)
 
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
 def modulo(partition_number):
     partition_method = ModuloPartition(partition_number)
-    partition_data(partition_method=partition_method)
-    create_indices(partition_method=partition_method)
-    create_content_index(partition_method=partition_method)
+    df_partition = partition_data(partition_method=partition_method)
+    create_indices(df=df_partition, partition_method=partition_method)
+    create_content_index(df=df_partition, partition_method=partition_method)
 
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
 def murmur2(partition_number):
     partition_method = Murmur2Partition(partition_number)
-    partition_data(partition_method=partition_method)
-    create_indices(partition_method=partition_method)
-    create_content_index(partition_method=partition_method)
+    df_partition = partition_data(partition_method=partition_method)
+    create_indices(df=df_partition, partition_method=partition_method)
+    create_content_index(df=df_partition, partition_method=partition_method)
 
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
-def star_space(partition_number):
-    partition_method = StarSpacePartition(partition_number)
-    partition_data(partition_method=partition_method)
-    create_indices(partition_method=partition_method)
-    create_content_index(partition_method=partition_method)
+@click.option('-m', '--model-folder', help="folder name of the model parameter")
+# Example: -p "initRandSd_0.01_adagrad_True_lr_0.01_margin_0.05_epoch_20_dim_100_negSerachLimit_100_dropoutRHS_0.5_minCount_5_normalizeText_True"
+def star_space(partition_number, model_folder):
+    partition_method = StarSpacePartition(partition_number, model_folder)
+    df_partition = partition_data(partition_method=partition_method)
+    create_indices(df=df_partition, partition_method=partition_method)
+    create_content_index(df=df_partition, partition_method=partition_method)
 
 
 if __name__ == "__main__":

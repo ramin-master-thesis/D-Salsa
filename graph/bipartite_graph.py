@@ -19,7 +19,7 @@ def load_indexes(partition_method: str = "single_partition", partition_number: i
     for side in sides:
         index_file = f"{side}_index.gzip"
         index_csv = os.path.join(current_directory, DATA_FOLDER, partition_method, partition_folder, index_file)
-        side_index = pd.read_parquet(index_csv)
+        side_index = pd.read_parquet(index_csv, engine='fastparquet')
         if side == "left":
             LEFT_INDEX = side_index
         else:

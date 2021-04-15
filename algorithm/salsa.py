@@ -41,9 +41,9 @@ class Salsa:
                 self.__iterate_other_side(starting_side)
             switch_side = not switch_side
 
-        for edge, visits in self.total_right_node_visits.items():
-            visit_percentage = visits / self.total_visits
-            print(f"Visited {edge} {visits} times, %{visit_percentage}")
+        # for edge, visits in self.total_right_node_visits.items():
+            # visit_percentage = visits / self.total_visits
+            # print(f"Visited {edge} {visits} times, %{visit_percentage}")
 
         if starting_side == Side.LEFT:
             known_nodes = set(get_left_node_neighbors(self.root_node))
