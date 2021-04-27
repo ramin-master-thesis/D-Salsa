@@ -12,11 +12,11 @@ app.register_blueprint(content, url_prefix='/content')
 
 
 @click.command()
-@click.option('--partition-method', type=click.Choice(['single_partition', 'modulo', 'murmur2', 'StarSpace']),
+@click.option('--partition-method', type=click.Choice(['single_partition', 'modulo', 'murmur2', 'star-space']),
               default="single_partition",
               help='hash function used for partitioning (defaults single_partition).')
 @click.option('--partition-number', default=0, help='number of partition')
-@click.option('--port', default=5001, help='port number of server')
+@click.option('--port', default=5000, help='port number of server')
 def cli(partition_method, partition_number, port):
     click.secho(f"Loading indexes for partition {partition_method} and partition(s) {partition_number}", fg='green')
 
@@ -38,6 +38,11 @@ def shutdown_server():
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
+
+
+@app.route('/healthy', methods=['GET'])
+def health_check():
+    return 'server is healthy'
 
 
 if __name__ == "__main__":

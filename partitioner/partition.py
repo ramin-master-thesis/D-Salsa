@@ -63,48 +63,56 @@ def __save_partition_to_file(df_index, partition_method):
 
 @click.group()
 @click.option('-f', '--path-to-file', default=f"{data_folder_path}/{data}")
-def cli(path_to_file):
+@click.option('--content-index/--no-content-index', default=False)
+@click.pass_context
+def cli(ctx, path_to_file, content_index):
     global data_folder_path
     global data
     data_folder_path = os.path.dirname(path_to_file)
     data = os.path.basename(path_to_file)
+    ctx.ensure_object(dict)
+
+    ctx.obj['should_create_content'] = content_index
 
 
 @cli.command()
-def single():
+@click.pass_context
+def single(ctx):
     partition_method = SinglePartition()
-    df_partition = partition_data(partition_method=partition_method)
-    create_indices(df_partition, partition_method=partition_method)
-    create_content_index(df_partition, partition_method=partition_method)
+    __creat_indices(partition_method, ctx.obj['should_create_content'])
 
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
-def modulo(partition_number):
+@click.pass_context
+def modulo(ctx, partition_number):
     partition_method = ModuloPartition(partition_number)
-    df_partition = partition_data(partition_method=partition_method)
-    create_indices(df=df_partition, partition_method=partition_method)
-    create_content_index(df=df_partition, partition_method=partition_method)
+    __creat_indices(partition_method, ctx.obj['should_create_content'])
 
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
-def murmur2(partition_number):
+@click.pass_context
+def murmur2(ctx, partition_number):
     partition_method = Murmur2Partition(partition_number)
-    df_partition = partition_data(partition_method=partition_method)
-    create_indices(df=df_partition, partition_method=partition_method)
-    create_content_index(df=df_partition, partition_method=partition_method)
+    __creat_indices(partition_method, ctx.obj['should_create_content'])
 
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
 @click.option('-m', '--model-folder', help="folder name of the model parameter")
-# Example: -p "initRandSd_0.01_adagrad_True_lr_0.01_margin_0.05_epoch_20_dim_100_negSerachLimit_100_dropoutRHS_0.5_minCount_5_normalizeText_True"
-def star_space(partition_number, model_folder):
+@click.pass_context
+# Example: -m "initRandSd_0.01_adagrad_True_lr_0.01_margin_0.05_epoch_20_dim_100_negSerachLimit_100_dropoutRHS_0.5_minCount_5_normalizeText_True"
+def star_space(ctx, partition_number, model_folder):
     partition_method = StarSpacePartition(partition_number, model_folder)
+    __creat_indices(partition_method, ctx.obj['should_create_content'])
+
+
+def __creat_indices(partition_method: PartitionBase, should_create_content_index: bool):
     df_partition = partition_data(partition_method=partition_method)
     create_indices(df=df_partition, partition_method=partition_method)
-    create_content_index(df=df_partition, partition_method=partition_method)
+    if should_create_content_index:
+        create_content_index(df=df_partition, partition_method=partition_method)
 
 
 if __name__ == "__main__":

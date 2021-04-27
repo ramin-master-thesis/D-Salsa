@@ -19,10 +19,9 @@ def read_all_train_sentences():
         return [x.split('\t')[0] for x in items]
 
 
-# sentences = read_all_train_sentences()
-# print("Load all sentences")
+sentences = read_all_train_sentences()
+print("Load all sentences")
 
-sentences = []
 
 # Import model
 def import_model(path):

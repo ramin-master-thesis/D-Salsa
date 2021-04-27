@@ -63,10 +63,7 @@ if __name__ == "__main__":
         log.debug("check if model exists...")
         folder_path = f"{current_directory}/../data/StarSpace_data/models"
 
-        folder_name = f"initRandSd_{arg.initRandSd}_adagrad_{arg.adagrad}_lr_{arg.lr}_margin_{arg.margin}" \
-                      f"_epoch_{arg.epoch}_dim_{arg.dim}" \
-                      f"_negSerachLimit_{arg.negSearchLimit}_dropoutRHS_{arg.dropoutRHS}" \
-                      f"_minCount_{arg.minCount}_normalizeText_{arg.normalizeText}"
+        folder_name = f"lr_{arg.lr}_dim_{arg.dim}_dropoutRHS_{arg.dropoutRHS}_normalizeText_{arg.normalizeText}"
 
         model_location = os.path.join(folder_path, folder_name)
 
