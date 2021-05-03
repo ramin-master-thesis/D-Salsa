@@ -19,10 +19,6 @@ def read_all_train_sentences():
         return [x.split('\t')[0] for x in items]
 
 
-sentences = read_all_train_sentences()
-print("Load all sentences")
-
-
 # Import model
 def import_model(path):
     arg = sw.args()
@@ -36,6 +32,9 @@ def import_model(path):
     return sp
 
 
+sentences = read_all_train_sentences()
+print("Load all sentences")
+
 for model_path in list_models:
     print(f"Starting with {model_path}")
     if os.path.isfile(os.path.join(model_path, "projection_matrix.npy")):
@@ -43,7 +42,6 @@ for model_path in list_models:
         continue
     star_space = import_model(model_path)
     X = np.array([np.array(star_space.getDocVector(x, ' '))[0] for x in sentences])
-    X_std = StandardScaler().fit_transform(X)
 
     cov_mat = np.cov(X.T)
     # Compute the eigen values and vectors using numpy

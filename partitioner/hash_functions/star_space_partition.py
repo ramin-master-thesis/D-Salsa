@@ -18,7 +18,8 @@ class StarSpacePartition(PartitionBase):
 
         self.sp = sw.starSpace(arg)
         self.sp.initFromTsv(f'{current_directory}/../data/StarSpace_data/models/{model_folder}/model.tsv')
-        self.proj_mat = np.load(f'{current_directory}/../data/StarSpace_data/models/{model_folder}/projection_matrix.npy')
+        self.proj_mat = np.load(
+            f'{current_directory}/../data/StarSpace_data/models/{model_folder}/projection_matrix.npy')
         super().__init__(partition_count)
 
     def calculate_partition(self, sentence: str) -> int:
@@ -50,7 +51,18 @@ class StarSpacePartition(PartitionBase):
         :param text: incoming string to normalize
         :return: lower case string or flatten number
         """
-        if text.isnumeric():
-            return '0'
-        if text.isalnum():
-            return text.lower()
+        res = []
+        for char in text.split():
+            if char.isspace():
+                continue
+            elif char.isalpha():
+                res.append(char.lower())
+            elif char.isnumeric():
+                res.append('0')
+            elif char.isalnum():
+                res.append(char.lower())
+            elif char.isascii():
+                res.append(char.lower())
+            else:
+                res.append(char)
+        return ' '.join(res)

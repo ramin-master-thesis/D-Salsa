@@ -25,9 +25,7 @@ def __read_data(use_cols: list, partition_number, partition_method_name: str) ->
 
 
 def create_indices(df: DataFrame() = None, partition_method: PartitionBase = SinglePartition()):
-    logs = open("partition_logs.txt", "a")
     click.echo(f"-------------{partition_method.name}---------------------")
-    logs.write(f"-------------{partition_method.name}---------------------\n")
     for num in range(partition_method.partition_count):
         if df is None:
             df_partition = __read_data([LEFT_PARTY, RIGHT_PARTY], num, partition_method.name)
@@ -39,8 +37,6 @@ def create_indices(df: DataFrame() = None, partition_method: PartitionBase = Sin
         df_partition.dropna(inplace=True)
         click.echo(f"-------------Partition {num}---------------------")
         click.echo(f"Number of edges: {len(df_partition)}")
-        logs.write(f"-------------Partition {num}---------------------\n")
-        logs.write(f"Number of edges: {len(df_partition)}\n")
 
         partition_number_folder = os.path.join(current_directory, DATA_FOLDER, partition_method.name,
                                                f"partition_{num}")
@@ -53,7 +49,6 @@ def create_indices(df: DataFrame() = None, partition_method: PartitionBase = Sin
             index_df = df_partition.groupby(index_side)[value_side].apply(list).reset_index(name=ADJACENCY_LIST)
             index_df.set_index(index_side, inplace=True)
             click.echo(f"{side} index ready. Len: {len(index_df)}")
-            logs.write(f"{side} index ready. Len: {len(index_df)}\n")
 
             save_path = os.path.join(partition_number_folder, f'{side}_index.gzip')
 
@@ -61,8 +56,6 @@ def create_indices(df: DataFrame() = None, partition_method: PartitionBase = Sin
 
             del index_df
     del df_partition
-    logs.write("\n\n\n")
-    logs.close()
 
 
 def create_content_index(df: DataFrame() = None, partition_method: PartitionBase = SinglePartition()):

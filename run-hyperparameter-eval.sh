@@ -46,7 +46,7 @@ CURRENT_DIRECTORY=$(pwd)
 PARTITION_METHOD="single"
 
 ### Partition and Index Data
-#python3 -m partitioner.partition "$PARTITION_METHOD"
+#python3 -m partitioner.main "$PARTITION_METHOD"
 
 #deploy_container "5001" "single_partition" "0"
 #check_health "5001"
@@ -56,7 +56,7 @@ PARTITION_METHOD="single"
 PARTITION_METHOD="murmur2"
 
 ### Partition and Index Data
-python3 -m partitioner.partition "$PARTITION_METHOD" -n "$NUMBER_OF_PARTITION"
+python3 -m partitioner.main "$PARTITION_METHOD" -n "$NUMBER_OF_PARTITION"
 
 ### murmur2 Server
 START_PORT=5002
@@ -100,7 +100,7 @@ for f in ./data/StarSpace_data/models/*; do
     echo "$MODEL_FOLDER"
 
     ### Partition and Index Data
-    python3 -m partitioner.partition "$PARTITION_METHOD" -m "$MODEL_FOLDER" -n "$NUMBER_OF_PARTITION"
+    python3 -m partitioner.main "$PARTITION_METHOD" -m "$MODEL_FOLDER" -n "$NUMBER_OF_PARTITION"
 
     ### star-space Server
     START_PORT=5002

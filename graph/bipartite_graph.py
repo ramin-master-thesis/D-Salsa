@@ -41,3 +41,15 @@ def get_right_node_neighbors(node) -> list:
     except KeyError:
         return []
     return values
+
+
+def get_edges_count() -> int:
+    return int(RIGHT_INDEX[ADJACENCY_LIST].str.len().sum())
+
+
+def get_left_node_count() -> int:
+    return len(LEFT_INDEX)
+
+
+def get_right_node_count() -> int:
+    return len(RIGHT_INDEX)
