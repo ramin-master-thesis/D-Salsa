@@ -19,12 +19,14 @@ app.register_blueprint(status, url_prefix='/status')
               help='hash function used for partitioning (defaults single_partition).')
 @click.option('--partition-number', default=0, help='number of partition')
 @click.option('--port', default=5000, help='port number of server')
-def cli(partition_method, partition_number, port):
+@click.option('--content-index/--no-content-index', default=False, help='Flag whether to load content index or not')
+def cli(partition_method, partition_number, port, content_index):
     click.secho(f"Loading indexes for partition {partition_method} and partition(s) {partition_number}", fg='green')
 
     load_indexes(partition_method=partition_method, partition_number=partition_number)
 
-    load_content_index()
+    if content_index:
+        load_content_index()
 
     app.run(host="0.0.0.0", port=port, debug=False)
 

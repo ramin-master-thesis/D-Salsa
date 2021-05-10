@@ -27,17 +27,17 @@ def load_indexes(partition_method: str = "single_partition", partition_number: i
         click.echo(f"finish loading the {side} index")
 
 
-def get_left_node_neighbors(node: int) -> list:
+def get_left_node_neighbors(node_id: int) -> list:
     try:
-        values = LEFT_INDEX._get_value(node, ADJACENCY_LIST)
+        values = LEFT_INDEX._get_value(node_id, ADJACENCY_LIST)
     except KeyError:
         return []
     return values
 
 
-def get_right_node_neighbors(node) -> list:
+def get_right_node_neighbors(node_id: int) -> list:
     try:
-        values = RIGHT_INDEX._get_value(node, ADJACENCY_LIST)
+        values = RIGHT_INDEX._get_value(node_id, ADJACENCY_LIST)
     except KeyError:
         return []
     return values
@@ -47,9 +47,9 @@ def get_edges_count() -> int:
     return int(RIGHT_INDEX[ADJACENCY_LIST].str.len().sum())
 
 
-def get_left_node_count() -> int:
+def get_left_index_node_count() -> int:
     return len(LEFT_INDEX)
 
 
-def get_right_node_count() -> int:
+def get_right_index_node_count() -> int:
     return len(RIGHT_INDEX)

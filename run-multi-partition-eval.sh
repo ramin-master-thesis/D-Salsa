@@ -12,7 +12,10 @@ deploy_container() {
   PORT=$1
   PARTITION_METHOD=$2
   PARTITION_NUMBER=$3
-  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.2 python -m server.app --partition-method "$PARTITION_METHOD" --partition-number "$PARTITION_NUMBER"
+  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.2 python -m server.app \
+  --partition-method "$PARTITION_METHOD" \
+  --partition-number "$PARTITION_NUMBER" \
+  --no-content-index
 }
 
 check_health() {
@@ -48,8 +51,9 @@ run_evaluation_suit() {
   PARTITION_METHOD=$1
   ### Evaluate evaluate
   cd ../evaluation/
+  PARTITION_FOLDER="$NUMBER_OF_PARTITION"_partitions
   CONFIG_FILE="$PARTITION_METHOD"-evaluation.yaml
-  python3 -m main ./configs/$CONFIG_FILE
+  python3 -m main ./configs/$PARTITION_FOLDER/$CONFIG_FILE
   cd output
 
   if [ ! -d "$PARTITION_METHOD" ]; then
@@ -71,23 +75,34 @@ if [ -z "$1" ]; then
   echo "No arguments supplied. Please pass the number of partitions 2, 4, 8,..."
   exit 1
 fi
-NUMBER_OF_PARTITION=$1
+NUMBER_OF_PARTITION=$1 # First argument determines the number of partitions
+SHOULD_PARTITION=${2:-false} # Second argument by default is set to false, determines if the partitioning should be done from scratch or just read from disk
+SHOULD_INCLUDE_SINGLE=${3:-true} # Third argument by default is set to true, determines if the single partition should be calculated from scratch
 START_PORT=5000
 CURRENT_DIRECTORY=$(pwd)
 
 ### Partition and Index Data
-MODEL="lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_True"
-python3 -m partitioner.main "single" \
-& python3 -m partitioner.main "murmur2" -n "$NUMBER_OF_PARTITION" \
-& python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL
+if $SHOULD_PARTITION ; then
+    printf 'Partitioning the data\n'
+    MODEL="lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_True"
+    python3 -m partitioner.main "single" \
+    & python3 -m partitioner.main "murmur2" -n "$NUMBER_OF_PARTITION" \
+    & python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL
+else
+  printf 'Copying the partitions from the partitions folder'
+  PARTITION_FOLDER="$NUMBER_OF_PARTITION"_partitions
+  cp -r ../partitions/"$PARTITION_FOLDER"/* ./data/
+fi
 
 
 #### single_partition
-deploy_container $START_PORT "single_partition" "0"
-check_health $START_PORT
-run_evaluation_suit "single"
-stop_container $START_PORT
-sleep 10
+if $SHOULD_INCLUDE_SINGLE ; then
+  deploy_container $START_PORT "single_partition" "0"
+  check_health $START_PORT
+  run_evaluation_suit "single"
+  stop_container $START_PORT
+  sleep 10
+fi
 
 ### murmur2
 deploy_partitions "murmur2"
