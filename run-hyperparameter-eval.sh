@@ -16,7 +16,7 @@ deploy_container() {
   PORT=$1
   PARTITION_METHOD=$2
   PARTITION_NUMBER=$3
-  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.1 python -m server.app --partition-method "$PARTITION_METHOD" --partition-number "$PARTITION_NUMBER"
+  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.3 python -m server.app --partition-method "$PARTITION_METHOD" --partition-number "$PARTITION_NUMBER"
 }
 
 check_health() {

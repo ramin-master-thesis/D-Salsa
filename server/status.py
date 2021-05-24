@@ -30,11 +30,11 @@ def get_count_right_index():
     return jsonify(get_right_index_node_count())
 
 
-@status.route('/count/left-index/neighbours/<int:node_id>', methods=['GET'])
-def get_count_left_index_neighbours(node_id: int):
+@status.route('/degree/left-index/<int:node_id>', methods=['GET'])
+def get_degree_left_index_node(node_id: int):
     return jsonify(len(get_left_node_neighbors(node_id)))
 
 
-@status.route('/count/right-index/neighbours/<int:node_id>', methods=['GET'])
-def get_count_right_index_neighbours(node_id: int):
+@status.route('/degree/right-index/<int:node_id>', methods=['GET'])
+def get_degree_right_index_node(node_id: int):
     return jsonify(len(get_right_node_neighbors(node_id)))

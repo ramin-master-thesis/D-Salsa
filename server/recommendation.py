@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from algorithm.salsa import Salsa
+from graph.bipartite_graph import get_left_node_neighbors
 from graph.content_graph import get_content_by_id
 
 recommendation = Blueprint('recommendation', __name__)
@@ -36,14 +37,26 @@ def salsa(user_id: int):
 
     recommendations = Salsa(user_id, limit, walks, walks_length, reset_probability).compute()
     results = []
-    for r in recommendations:
-        results.append({"id": r[0], "hit": r[1]})
 
     if with_content:
         results = []
         for r in recommendations:
-            results.append({"id": r[0], "content": get_content_by_id(r[0]), "hit": r[1]})
+            results.append(
+                {"id": r[0],
+                 "content": get_content_by_id(r[0]),
+                 "hit": r[1]
+                 # "degree": len(get_left_node_neighbors(user_id))
+                 }
+            )
         return jsonify(results)
+
+    for r in recommendations:
+        results.append(
+            {"id": r[0],
+             "hit": r[1]
+             # "degree": len(get_left_node_neighbors(user_id))
+             }
+        )
 
     return jsonify(results)
 
