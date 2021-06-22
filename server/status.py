@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 
 from graph.bipartite_graph import get_left_index_node_count, get_right_index_node_count, get_edges_count, \
     get_left_node_neighbors, get_right_node_neighbors
+from graph.content_graph import get_content_by_id
 
 status = Blueprint('status', __name__)
 
@@ -38,3 +39,14 @@ def get_degree_left_index_node(node_id: int):
 @status.route('/degree/right-index/<int:node_id>', methods=['GET'])
 def get_degree_right_index_node(node_id: int):
     return jsonify(len(get_right_node_neighbors(node_id)))
+
+
+@status.route('/degree/content/<int:node_id>', methods=['GET'])
+def get_user_interactions(node_id: int):
+    neighbors = get_left_node_neighbors(node_id)
+    res = []
+
+    for identifier in neighbors:
+        res.append(get_content_by_id(identifier))
+
+    return jsonify(res)

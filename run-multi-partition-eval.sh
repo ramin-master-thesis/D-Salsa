@@ -34,6 +34,7 @@ stop_container() {
 
 deploy_partitions() {
   PARTITION_METHOD=$1
+  START_PORT=${2:-5000}
 
   ### Start Server
   for ((i = 0; i < NUMBER_OF_PARTITION; ++i)); do
@@ -65,6 +66,7 @@ run_evaluation_suit() {
 
 prune_partitions() {
   ## Kill Container
+  START_PORT=${1:-5000}
   for ((i = 0; i < NUMBER_OF_PARTITION; ++i)); do
     PORT=$(($START_PORT + $i))
     stop_container $PORT
@@ -105,12 +107,19 @@ if $SHOULD_INCLUDE_SINGLE ; then
 fi
 
 ### murmur2
-deploy_partitions "murmur2"
+(
+printf "starting murmur2"
+deploy_partitions "murmur2" $START_PORT
 run_evaluation_suit "murmur2"
-prune_partitions
-sleep 15
+prune_partitions $START_PORT
+) &
+#sleep 15
 
 ### star-space
-deploy_partitions "star-space"
+(
+printf "starting StarSpace"
+PORT=$(($START_PORT+$NUMBER_OF_PARTITION))
+deploy_partitions "star-space" $PORT
 run_evaluation_suit "star-space"
-prune_partitions
+prune_partitions $PORT
+)

@@ -1,8 +1,9 @@
 import click
 from flask import Flask, request
+from flask_cors import CORS
 
-from graph.content_graph import load_content_index
 from graph.bipartite_graph import load_indexes
+from graph.content_graph import load_content_index
 from server.content import content
 from server.recommendation import recommendation
 from server.status import status
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.register_blueprint(recommendation, url_prefix='/recommendation')
 app.register_blueprint(content, url_prefix='/content')
 app.register_blueprint(status, url_prefix='/status')
+CORS(app)
 
 
 @click.command()

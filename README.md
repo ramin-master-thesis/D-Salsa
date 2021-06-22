@@ -7,7 +7,7 @@ Small piece of code simulating the SALSA algorithm.
 Build image from Dockerfile:
 
 ```shell
-docker build -t raminqaf/salsa:1.1 .
+docker build -t raminqaf/salsa:1.3 .
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ flas run
 Run image from the root of the project:
 
 ```shell
-docker run --rm -d -p <port_number>:5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.1 python -m server.app --partition-method <partition_method> --partition_number <partition_number>
+docker run --rm -d -p <port_number>:5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.3 python -m server.app --partition-method <partition_method> --partition_number <partition_number>
 ```
 
 choose a free port as the `port_number`. You can choose between these partitioning methods:

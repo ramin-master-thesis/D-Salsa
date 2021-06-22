@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 
 from algorithm.salsa import Salsa
-from graph.bipartite_graph import get_left_node_neighbors
 from graph.content_graph import get_content_by_id
 
 recommendation = Blueprint('recommendation', __name__)

@@ -55,7 +55,7 @@ def murmur2(ctx, partition_number):
 
 @cli.command()
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
-@click.option('-m', '--model-folder', help="folder name of the model parameter")
+@click.option('-m', '--model-folder', required=True, help="folder name of the model parameter")
 @click.pass_context
 # Example: -m "lr_0.01_dim_100_dropoutRHS_0.5_normalizeText_True"
 def star_space(ctx, partition_number, model_folder):
