@@ -1,5 +1,4 @@
 import click
-import os
 
 from partitioner import current_directory
 from partitioner.hash_functions.modulo_partition import ModuloPartition
@@ -21,20 +20,17 @@ data = "tweets-dump.tsv"
               help="A flag dedicating if the content index should be generated or not (default is false)")
 @click.pass_context
 def cli(ctx, path_to_file, content_index):
-    global data_folder_path
-    global data
-    data_folder_path = os.path.dirname(path_to_file)
-    data = os.path.basename(path_to_file)
     ctx.ensure_object(dict)
 
     ctx.obj['should_create_content'] = content_index
+    ctx.obj['path_to_file'] = path_to_file
 
 
 @cli.command()
 @click.pass_context
 def single(ctx):
     partition_method = SinglePartition()
-    __creat_indices(partition_method, ctx.obj['should_create_content'])
+    __creat_indices(partition_method, ctx.obj['should_create_content'], ctx.obj['path_to_file'])
 
 
 @cli.command()
@@ -42,7 +38,7 @@ def single(ctx):
 @click.pass_context
 def modulo(ctx, partition_number):
     partition_method = ModuloPartition(partition_number)
-    __creat_indices(partition_method, ctx.obj['should_create_content'])
+    __creat_indices(partition_method, ctx.obj['should_create_content'], ctx.obj['path_to_file'])
 
 
 @cli.command()
@@ -50,7 +46,7 @@ def modulo(ctx, partition_number):
 @click.pass_context
 def murmur2(ctx, partition_number):
     partition_method = Murmur2Partition(partition_number)
-    __creat_indices(partition_method, ctx.obj['should_create_content'])
+    __creat_indices(partition_method, ctx.obj['should_create_content'], ctx.obj['path_to_file'])
 
 
 @cli.command()
@@ -60,14 +56,14 @@ def murmur2(ctx, partition_number):
 # Example: -m "lr_0.01_dim_100_dropoutRHS_0.5_normalizeText_True"
 def star_space(ctx, partition_number, model_folder):
     partition_method = StarSpacePartition(partition_number, model_folder)
-    __creat_indices(partition_method, ctx.obj['should_create_content'])
+    __creat_indices(partition_method, ctx.obj['should_create_content'], ctx.obj['path_to_file'])
 
 
-def __creat_indices(partition_method: PartitionBase, should_create_content_index: bool):
-    df_partition = partition_data(partition_method=partition_method)
-    create_indices(df=df_partition, partition_method=partition_method)
+def __creat_indices(partition_method: PartitionBase, should_create_content_index: bool, file_path: str):
+    df_partition = partition_data(partition_method=partition_method, file_path=file_path)
+    create_indices(file_path=file_path, df=df_partition, partition_method=partition_method)
     if should_create_content_index:
-        create_content_index(df=df_partition, partition_method=partition_method)
+        create_content_index(file_path=file_path, df=df_partition, partition_method=partition_method)
 
 
 if __name__ == "__main__":

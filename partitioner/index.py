@@ -4,31 +4,21 @@ import click
 import pandas as pd
 from pandas import DataFrame
 
-from graph.bipartite_graph import current_directory
 from partitioner.hash_functions.partition_base_class import PartitionBase
 from partitioner.hash_functions.single_partition import SinglePartition
 
-DATA_FOLDER = '../data'
-FILE = 'tweets.gzip'
 LEFT_PARTY = "user_id"
 RIGHT_PARTY = "tweet_id"
 CONTENT = "content"
 ADJACENCY_LIST = "adjacency_list"
 
 
-def __read_data(use_cols: list, partition_number, partition_method_name: str) -> DataFrame():
-    partition_number_folder = f"partition_{partition_number}"
-    csv_filename = os.path.join(current_directory, DATA_FOLDER, partition_method_name, partition_number_folder, FILE)
-
-    df = pd.read_parquet(csv_filename, columns=use_cols)
-    return df
-
-
-def create_indices(df: DataFrame() = None, partition_method: PartitionBase = SinglePartition()):
+def create_indices(file_path: str, df: DataFrame() = None, partition_method: PartitionBase = SinglePartition()):
     click.echo(f"-------------{partition_method.name}---------------------")
+    data_folder = os.path.dirname(file_path)
     for num in range(partition_method.partition_count):
         if df is None:
-            df_partition = __read_data([LEFT_PARTY, RIGHT_PARTY], num, partition_method.name)
+            df_partition = __read_data([LEFT_PARTY, RIGHT_PARTY], num, partition_method.name, file_path)
         else:
             df_partition = df[df["partition"] == num]
         df_partition = df_partition[[LEFT_PARTY, RIGHT_PARTY]]
@@ -38,7 +28,7 @@ def create_indices(df: DataFrame() = None, partition_method: PartitionBase = Sin
         click.echo(f"-------------Partition {num}---------------------")
         click.echo(f"Number of edges: {len(df_partition)}")
 
-        partition_number_folder = os.path.join(current_directory, DATA_FOLDER, partition_method.name,
+        partition_number_folder = os.path.join(data_folder, partition_method.name,
                                                f"partition_{num}")
         if not os.path.isdir(partition_number_folder):
             os.mkdir(partition_number_folder)
@@ -58,10 +48,12 @@ def create_indices(df: DataFrame() = None, partition_method: PartitionBase = Sin
     del df_partition
 
 
-def create_content_index(df: DataFrame() = None, partition_method: PartitionBase = SinglePartition()):
+def create_content_index(file_path: str, df: DataFrame() = None, partition_method: PartitionBase = SinglePartition()):
+    data_folder = os.path.dirname(file_path)
+
     for num in range(partition_method.partition_count):
         if df is None:
-            df_partition = __read_data([RIGHT_PARTY, CONTENT], num, partition_method.name)
+            df_partition = __read_data([RIGHT_PARTY, CONTENT], num, partition_method.name, file_path)
         else:
             df_partition = df[df["partition"] == num]
         df_partition = df_partition[[RIGHT_PARTY, CONTENT]]
@@ -70,7 +62,17 @@ def create_content_index(df: DataFrame() = None, partition_method: PartitionBase
         df_partition.dropna(inplace=True)
         df_partition.set_index(RIGHT_PARTY, inplace=True)
         click.echo(f"content index ready")
-        save_path = os.path.join(current_directory, DATA_FOLDER, partition_method.name, f"partition_{num}",
+        save_path = os.path.join(data_folder, partition_method.name, f"partition_{num}",
                                  "content_index.gzip")
 
         df_partition.to_parquet(save_path, compression='gzip')
+
+
+def __read_data(use_cols: list, partition_number, partition_method_name: str, file_path) -> DataFrame():
+    data_folder = os.path.dirname(file_path)
+    file_name = os.path.basename(file_path)
+    partition_number_folder = f"partition_{partition_number}"
+    parquet_file = os.path.join(data_folder, partition_method_name, partition_number_folder, file_name)
+
+    df = pd.read_parquet(parquet_file, columns=use_cols)
+    return df
