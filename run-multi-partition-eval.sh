@@ -89,7 +89,7 @@ if $SHOULD_PARTITION ; then
     MODEL="lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_True"
     python3 -m partitioner.main "single" \
     & python3 -m partitioner.main "murmur2" -n "$NUMBER_OF_PARTITION" \
-    & python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL
+#    & python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL
 else
   printf 'Copying the partitions from the partitions folder'
   PARTITION_FOLDER="$NUMBER_OF_PARTITION"_partitions
@@ -116,10 +116,10 @@ prune_partitions $START_PORT
 #sleep 15
 
 ### star-space
-(
-printf "starting StarSpace"
-PORT=$(($START_PORT+$NUMBER_OF_PARTITION))
-deploy_partitions "star-space" $PORT
-run_evaluation_suit "star-space"
-prune_partitions $PORT
-)
+#(
+#printf "starting StarSpace"
+#PORT=$(($START_PORT+$NUMBER_OF_PARTITION))
+#deploy_partitions "star-space" $PORT
+#run_evaluation_suit "star-space"
+#prune_partitions $PORT
+#)

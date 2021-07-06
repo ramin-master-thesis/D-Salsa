@@ -10,6 +10,7 @@ class StarSpacePartition(PartitionBase):
     name = "star-space"
 
     def __init__(self, partition_count, model_folder):
+        self.model_folder = model_folder
         # Import model
         arg = sw.args()
         arg.trainMode = 2
@@ -23,8 +24,10 @@ class StarSpacePartition(PartitionBase):
         super().__init__(partition_count)
 
     def calculate_partition(self, sentence: str) -> int:
-        normalized_sentence = self.__normalize_text(sentence)
-        vec = np.array(self.sp.getDocVector(normalized_sentence, ' '))[0]
+        doc = sentence
+        if "True" in self.model_folder:
+            doc = self.__normalize_text(sentence)
+        vec = np.array(self.sp.getDocVector(doc, ' '))[0]
         bits = vec.dot(self.proj_mat) > 0
 
         number_of_bits = int(math.log2(self.partition_count))

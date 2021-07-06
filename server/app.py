@@ -28,7 +28,7 @@ def cli(partition_method, partition_number, port, content_index):
     load_indexes(partition_method=partition_method, partition_number=partition_number)
 
     if content_index:
-        load_content_index()
+        load_content_index(partition_method=partition_method, partition_number=partition_number)
 
     app.run(host="0.0.0.0", port=port, debug=False)
 

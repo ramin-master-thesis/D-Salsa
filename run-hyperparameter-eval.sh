@@ -16,7 +16,7 @@ deploy_container() {
   PORT=$1
   PARTITION_METHOD=$2
   PARTITION_NUMBER=$3
-  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.3 python -m server.app --partition-method "$PARTITION_METHOD" --partition-number "$PARTITION_NUMBER"
+  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.3 python -m server.app --content-index --partition-method "$PARTITION_METHOD" --partition-number "$PARTITION_NUMBER"
 }
 
 check_health() {
@@ -41,57 +41,6 @@ fi
 NUMBER_OF_PARTITION=$1
 CURRENT_DIRECTORY=$(pwd)
 
-#### single_partition
-
-PARTITION_METHOD="single"
-
-### Partition and Index Data
-#python3 -m partitioner.main "$PARTITION_METHOD"
-
-#deploy_container "5001" "single_partition" "0"
-#check_health "5001"
-
-### murmur2
-
-PARTITION_METHOD="murmur2"
-
-### Partition and Index Data
-python3 -m partitioner.main "$PARTITION_METHOD" -n "$NUMBER_OF_PARTITION"
-
-### murmur2 Server
-START_PORT=5002
-END_PORT=0
-for ((i=0;i<NUMBER_OF_PARTITION;++i)); do
-  PORT=$(( $START_PORT + $i))
-  deploy_container $PORT $PARTITION_METHOD $i
-  END_PORT=$(( $PORT + 1))
-done
-
-for ((i=0;i<NUMBER_OF_PARTITION;++i)); do
-  PORT=$(( $START_PORT + $i))
-  check_health $PORT
-done
-
-
-### Evaluate murmur2
-printf "waiting for servers to start"
-cd ../evaluation/
-python3 -m main
-cd output
-
-if [ ! -d murmur2 ]; then
-  mkdir murmur2
-fi
-ls -p | grep -v / | xargs mv -t murmur2
-cd $CURRENT_DIRECTORY
-
-
-## Kill Container
-for ((i=0;i<NUMBER_OF_PARTITION;++i)); do
-  PORT=$(( $START_PORT + $i))
-  stop_container $PORT
-done
-
 for f in ./data/StarSpace_data/models/*; do
   if [ -d "$f" ]; then
     # Will not run if no directories are available
@@ -100,7 +49,7 @@ for f in ./data/StarSpace_data/models/*; do
     echo "$MODEL_FOLDER"
 
     ### Partition and Index Data
-    python3 -m partitioner.main "$PARTITION_METHOD" -m "$MODEL_FOLDER" -n "$NUMBER_OF_PARTITION"
+    python3 -m partitioner.main --content-index "$PARTITION_METHOD" -m "$MODEL_FOLDER" -n "$NUMBER_OF_PARTITION"
 
     ### star-space Server
     START_PORT=5002
