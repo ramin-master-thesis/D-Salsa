@@ -1,9 +1,13 @@
+import importlib
+import inspect
+import sys
+
 import click
 from flask import Flask, request
 from flask_cors import CORS
 
-from graph.bipartite_graph import load_indexes
-from graph.content_graph import load_content_index
+from indexer.tweetid_content_index import TweetIdContentIndex
+from indexer.userid_tweetid_index import UserIdTweetIdIndex
 from server.content import content
 from server.recommendation import recommendation
 from server.status import status
@@ -16,8 +20,8 @@ CORS(app)
 
 
 @click.command()
-@click.option('--partition-method', type=click.Choice(['single_partition', 'modulo', 'murmur2', 'star-space']),
-              default="single_partition",
+@click.option('--partition-method', type=click.Choice(['single', 'modulo', 'murmur2', 'star_space']),
+              default="single",
               help='hash function used for partitioning (defaults single_partition).')
 @click.option('--partition-number', default=0, help='number of partition')
 @click.option('--port', default=5000, help='port number of server')
@@ -25,10 +29,17 @@ CORS(app)
 def cli(partition_method, partition_number, port, content_index):
     click.secho(f"Loading indexes for partition {partition_method} and partition(s) {partition_number}", fg='green')
 
-    load_indexes(partition_method=partition_method, partition_number=partition_number)
+    m = importlib.import_module(f"partitioner.hash_functions.{partition_method}_partition")
+    partition_method_obj = inspect.getmembers(m, inspect.isclass)[1][1]
+
+    userid_tweetid_indexer = UserIdTweetIdIndex(partitioning_method=partition_method_obj)
+    userid_tweetid_indexer.load_indices(partition_number)
+    app.config["userid_tweetid_indexer"] = userid_tweetid_indexer
 
     if content_index:
-        load_content_index(partition_method=partition_method, partition_number=partition_number)
+        tweetid_content_indexer = TweetIdContentIndex(partitioning_method=partition_method_obj)
+        tweetid_content_indexer.load_indices(partition_number)
+        app.config["tweetid_content_indexer"] = tweetid_content_indexer
 
     app.run(host="0.0.0.0", port=port, debug=False)
 

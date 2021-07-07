@@ -2,8 +2,8 @@ import numpy as np
 import starwrap as sw
 from numpy.lib import math
 
-from partitioner import current_directory
-from partitioner.hash_functions.partition_base_class import PartitionBase
+from definitions import ROOT_DIR
+from partitioner.hash_functions.partition_base import PartitionBase
 
 
 class StarSpacePartition(PartitionBase):
@@ -18,9 +18,9 @@ class StarSpacePartition(PartitionBase):
         arg.verbose = True
 
         self.sp = sw.starSpace(arg)
-        self.sp.initFromTsv(f'{current_directory}/../data/StarSpace_data/models/{model_folder}/model.tsv')
+        self.sp.initFromTsv(f'{ROOT_DIR}/data/StarSpace_data/models/{model_folder}/model.tsv')
         self.proj_mat = np.load(
-            f'{current_directory}/../data/StarSpace_data/models/{model_folder}/projection_matrix.npy')
+            f'{ROOT_DIR}/data/StarSpace_data/models/{model_folder}/projection_matrix.npy')
         super().__init__(partition_count)
 
     def calculate_partition(self, sentence: str) -> int:

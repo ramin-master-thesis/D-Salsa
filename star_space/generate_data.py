@@ -2,9 +2,8 @@ import click
 import pandas as pd
 import requests
 from pandas import DataFrame
-from sklearn.model_selection import train_test_split
 
-from star_space import current_directory
+from definitions import ROOT_DIR
 
 
 def __get_recommendations_content(identifier: int) -> list:
@@ -24,7 +23,7 @@ def __get_recommendations_content(identifier: int) -> list:
 
 
 def __get_identifiers():
-    identifiers = pd.read_parquet(f"{current_directory}/../data/single_partition/partition_0/right_index.gzip")
+    identifiers = pd.read_parquet(f"{ROOT_DIR}/data/single_partition/partition_0/right_index.gzip")
 
     df = DataFrame()
 
@@ -38,7 +37,7 @@ def __get_identifiers():
 def __generate_train_test_data(df: DataFrame(), is_train=True):
     document_count = round(len(df) / 1000)
     file_name = f"twitter_train_{document_count}k.txt" if is_train else f"twitter_test_{document_count}k.txt"
-    with open(f"{current_directory}/../data/StarSpace_data/{file_name}", "w") as outfile:
+    with open(f"{ROOT_DIR}/data/StarSpace_data/{file_name}", "w") as outfile:
         training_data = []
         count = 1
         for row in df.itertuples(index=False):

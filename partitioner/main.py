@@ -1,15 +1,16 @@
 import click
 
-from partitioner import current_directory
+from definitions import ROOT_DIR
+from indexer.tweetid_content_index import TweetIdContentIndex
+from indexer.userid_tweetid_index import UserIdTweetIdIndex
 from partitioner.hash_functions.modulo_partition import ModuloPartition
 from partitioner.hash_functions.murmur2_partition import Murmur2Partition
-from partitioner.hash_functions.partition_base_class import PartitionBase
+from partitioner.hash_functions.partition_base import PartitionBase
 from partitioner.hash_functions.single_partition import SinglePartition
 from partitioner.hash_functions.star_space_partition import StarSpacePartition
-from partitioner.index import create_indices, create_content_index
 from partitioner.partition import partition_data
 
-data_folder_path = f"{current_directory}/../data"
+data_folder_path = f"{ROOT_DIR}/data"
 data = "tweets-dump.tsv"
 
 
@@ -61,9 +62,9 @@ def star_space(ctx, partition_number, model_folder):
 
 def __creat_indices(partition_method: PartitionBase, should_create_content_index: bool, file_path: str):
     df_partition = partition_data(partition_method=partition_method, file_path=file_path)
-    create_indices(file_path=file_path, df=df_partition, partition_method=partition_method)
+    UserIdTweetIdIndex(partitioning_method=partition_method).create_indices(df_partition)
     if should_create_content_index:
-        create_content_index(file_path=file_path, df=df_partition, partition_method=partition_method)
+        TweetIdContentIndex(partitioning_method=partition_method).create_indices(df_partition)
 
 
 if __name__ == "__main__":

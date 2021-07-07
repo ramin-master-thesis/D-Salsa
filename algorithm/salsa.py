@@ -1,7 +1,8 @@
 from enum import Enum
 from random import randrange, uniform
 
-from graph.bipartite_graph import get_left_node_neighbors, get_right_node_neighbors
+from graph.bipartite_graph import BipartiteGraph
+from indexer.index_base import IndexBase
 
 
 class Side(Enum):
@@ -10,12 +11,13 @@ class Side(Enum):
 
 
 class Salsa:
-    def __init__(self, root_node, limit, walks, walks_length, reset_probability):
+    def __init__(self, root_node, limit, walks, walks_length, reset_probability, indexer: IndexBase):
         self.root_node = root_node
         self.limit = limit
         self.walks = walks
         self.walks_length = walks_length
         self.reset_probability = reset_probability
+        self.bipartite_graph = BipartiteGraph(indexer)
         self.total_visits = 0
 
         self.current_left_node_visits = {}
@@ -41,12 +43,8 @@ class Salsa:
                 self.__iterate_other_side(starting_side)
             switch_side = not switch_side
 
-        # for edge, visits in self.total_right_node_visits.items():
-            # visit_percentage = visits / self.total_visits
-            # print(f"Visited {edge} {visits} times, %{visit_percentage}")
-
         if starting_side == Side.LEFT:
-            known_nodes = set(get_left_node_neighbors(self.root_node))
+            known_nodes = set(self.bipartite_graph.get_left_node_neighbors(self.root_node))
         else:
             known_nodes = {self.root_node}
 
@@ -102,9 +100,13 @@ class Salsa:
 
     def __get_side_package(self, start_left=True):
         if start_left:
-            return self.current_left_node_visits, get_left_node_neighbors, self.current_right_node_visits
+            return self.current_left_node_visits, \
+                   self.bipartite_graph.get_left_node_neighbors, \
+                   self.current_right_node_visits
         else:
-            return self.current_right_node_visits, get_right_node_neighbors, self.current_left_node_visits
+            return self.current_right_node_visits, \
+                   self.bipartite_graph.get_right_node_neighbors, \
+                   self.current_left_node_visits
 
     def __clean_recommendations(self, known_nodes):
         not_visited_nodes = {k: v for k, v in self.total_right_node_visits.items() if k not in known_nodes}

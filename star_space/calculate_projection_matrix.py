@@ -1,12 +1,13 @@
 # Import modules
 import os
 from glob import glob
-import starwrap as sw
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from star_space import current_directory
 
-star_space_data_path = os.path.join(current_directory, "..", "data", "StarSpace_data")
+import numpy as np
+import starwrap as sw
+
+from definitions import ROOT_DIR
+
+star_space_data_path = os.path.join(ROOT_DIR, "data", "StarSpace_data")
 
 # Get models
 list_models = glob(os.path.join(star_space_data_path, "models", "*", ""))
@@ -15,7 +16,7 @@ list_models = glob(os.path.join(star_space_data_path, "models", "*", ""))
 # Read all sentences
 def read_all_train_sentences():
     print("reading train data")
-    with open(f'{current_directory}/../data/StarSpace_data/twitter_train_3M.txt', 'r', encoding='utf-8') as items:
+    with open(f'{ROOT_DIR}/data/StarSpace_data/twitter_train_3M.txt', 'r', encoding='utf-8') as items:
         return [x.split('\t')[0] for x in items]
 
 

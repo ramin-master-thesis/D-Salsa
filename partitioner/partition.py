@@ -3,7 +3,7 @@ import os
 import click
 import pandas as pd
 
-from partitioner.hash_functions.partition_base_class import PartitionBase
+from partitioner.hash_functions.partition_base import PartitionBase
 from partitioner.hash_functions.single_partition import SinglePartition
 from partitioner.hash_functions.star_space_partition import StarSpacePartition
 

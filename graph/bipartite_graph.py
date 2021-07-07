@@ -1,55 +1,31 @@
-import os
-
-import click
-import pandas as pd
-
-from graph import current_directory
-
-DATA_FOLDER = '../data'
-ADJACENCY_LIST = "adjacency_list"
-LEFT_INDEX = pd.DataFrame()
-RIGHT_INDEX = pd.DataFrame()
+from indexer.index_base import IndexBase
 
 
-def load_indexes(partition_method: str = "single_partition", partition_number: int = 0):
-    global LEFT_INDEX
-    global RIGHT_INDEX
-    sides = ["left", "right"]
-    partition_folder = f"partition_{partition_number}"
-    for side in sides:
-        index_file = f"{side}_index.gzip"
-        index_csv = os.path.join(current_directory, DATA_FOLDER, partition_method, partition_folder, index_file)
-        side_index = pd.read_parquet(index_csv, engine='fastparquet')
-        if side == "left":
-            LEFT_INDEX = side_index
-        else:
-            RIGHT_INDEX = side_index
-        click.echo(f"finish loading the {side} index")
+class BipartiteGraph:
+    ADJACENCY_LIST = "adjacency_list"
 
+    def __init__(self, indexer: IndexBase):
+        self.indexer = indexer
 
-def get_left_node_neighbors(node_id: int) -> list:
-    try:
-        values = LEFT_INDEX._get_value(node_id, ADJACENCY_LIST)
-    except KeyError:
-        return []
-    return values
+    def get_left_node_neighbors(self, node_id: int) -> list:
+        try:
+            values = self.indexer.left_index_df._get_value(node_id, self.ADJACENCY_LIST)
+        except KeyError:
+            return []
+        return values
 
+    def get_right_node_neighbors(self, node_id: int) -> list:
+        try:
+            values = self.indexer.right_index_df._get_value(node_id, self.ADJACENCY_LIST)
+        except KeyError:
+            return []
+        return values
 
-def get_right_node_neighbors(node_id: int) -> list:
-    try:
-        values = RIGHT_INDEX._get_value(node_id, ADJACENCY_LIST)
-    except KeyError:
-        return []
-    return values
+    def get_edges_count(self) -> int:
+        return int(self.indexer.right_index_df[self.ADJACENCY_LIST].str.len().sum())
 
+    def get_left_index_node_count(self) -> int:
+        return len(self.indexer.left_index_df)
 
-def get_edges_count() -> int:
-    return int(RIGHT_INDEX[ADJACENCY_LIST].str.len().sum())
-
-
-def get_left_index_node_count() -> int:
-    return len(LEFT_INDEX)
-
-
-def get_right_index_node_count() -> int:
-    return len(RIGHT_INDEX)
+    def get_right_index_node_count(self) -> int:
+        return len(self.indexer.right_index_df)

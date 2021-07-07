@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 
 from algorithm.salsa import Salsa
-from graph.content_graph import get_content_by_id
+from graph.content_graph import ContentGraph
 
 recommendation = Blueprint('recommendation', __name__)
 
@@ -34,17 +34,22 @@ def salsa(user_id: int):
     limit, reset_probability, walks, walks_length = __init_parameters()
     with_content = False if request.args.get('content') == 'false' else True
 
-    recommendations = Salsa(user_id, limit, walks, walks_length, reset_probability).compute()
+    recommendations = Salsa(user_id,
+                            limit,
+                            walks,
+                            walks_length,
+                            reset_probability,
+                            current_app.config.get("userid_tweetid_indexer")).compute()
     results = []
 
     if with_content:
         results = []
+        indexer = current_app.config.get("tweetid_content_indexer")
         for r in recommendations:
             results.append(
                 {"id": r[0],
-                 "content": get_content_by_id(r[0]),
+                 "content": ContentGraph(indexer).get_content_by_id(r[0]),
                  "hit": r[1]
-                 # "degree": len(get_left_node_neighbors(user_id))
                  }
             )
         return jsonify(results)
@@ -53,7 +58,6 @@ def salsa(user_id: int):
         results.append(
             {"id": r[0],
              "hit": r[1]
-             # "degree": len(get_left_node_neighbors(user_id))
              }
         )
 
@@ -66,15 +70,21 @@ def salsa_for_tweets(tweet_id: int):
     should_include_first = False if request.args.get('first') == 'false' else True
     limit, reset_probability, walks, walks_length = __init_parameters()
 
-    recommendations = Salsa(tweet_id, limit, walks, walks_length, reset_probability).compute(for_user=False)
+    recommendations = Salsa(tweet_id,
+                            limit,
+                            walks,
+                            walks_length,
+                            reset_probability,
+                            current_app.config.get("userid_tweetid_indexer")).compute(for_user=False)
 
     if should_include_first:
         recommendations.insert(0, (tweet_id, 0))
 
     if with_content:
+        indexer = current_app.config.get("tweetid_content_indexer")
         res = []
         for r in recommendations:
-            res.append({"id": r[0], "content": get_content_by_id(r[0]), "hit": r[1]})
+            res.append({"id": r[0], "content": ContentGraph(indexer).get_content_by_id(r[0]), "hit": r[1]})
         return jsonify(res)
 
     return jsonify(recommendations)

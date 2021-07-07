@@ -1,52 +1,68 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, current_app
 
-from graph.bipartite_graph import get_left_index_node_count, get_right_index_node_count, get_edges_count, \
-    get_left_node_neighbors, get_right_node_neighbors
-from graph.content_graph import get_content_by_id
+from graph.bipartite_graph import BipartiteGraph
+from graph.content_graph import ContentGraph
 
 status = Blueprint('status', __name__)
 
 
 @status.route('/', methods=['GET'])
 def get_stats():
-    data = {'edges': get_edges_count(),
-            'left-index-nodes': get_left_index_node_count(),
-            'right-index-nodes': get_right_index_node_count()
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    data = {'edges': bipartite_graph.get_edges_count(),
+            'left-index-nodes': bipartite_graph.get_left_index_node_count(),
+            'right-index-nodes': bipartite_graph.get_right_index_node_count()
             }
     return jsonify(data)
 
 
 @status.route('/count/edges', methods=['GET'])
 def get_count_edges():
-    return jsonify(get_edges_count())
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    return jsonify(bipartite_graph.get_edges_count())
 
 
 @status.route('/count/left-index', methods=['GET'])
 def get_count_left_index():
-    return jsonify(get_left_index_node_count())
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    return jsonify(bipartite_graph.get_left_index_node_count())
 
 
 @status.route('/count/right-index', methods=['GET'])
 def get_count_right_index():
-    return jsonify(get_right_index_node_count())
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    return jsonify(bipartite_graph.get_right_index_node_count())
 
 
 @status.route('/degree/left-index/<int:node_id>', methods=['GET'])
 def get_degree_left_index_node(node_id: int):
-    return jsonify(len(get_left_node_neighbors(node_id)))
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    return jsonify(len(bipartite_graph.get_left_node_neighbors(node_id)))
 
 
 @status.route('/degree/right-index/<int:node_id>', methods=['GET'])
 def get_degree_right_index_node(node_id: int):
-    return jsonify(len(get_right_node_neighbors(node_id)))
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    return jsonify(len(bipartite_graph.get_right_node_neighbors(node_id)))
 
 
 @status.route('/degree/content/<int:node_id>', methods=['GET'])
 def get_user_interactions(node_id: int):
-    neighbors = get_left_node_neighbors(node_id)
+    indexer = current_app.config.get("userid_tweetid_indexer")
+    bipartite_graph = BipartiteGraph(indexer)
+    neighbors = bipartite_graph.get_left_node_neighbors(node_id)
+
+    indexer = current_app.config.get("tweetid_content_indexer")
+    content_graph = ContentGraph(indexer)
     res = []
 
     for identifier in neighbors:
-        res.append(get_content_by_id(identifier))
+        res.append(content_graph.get_content_by_id(identifier))
 
     return jsonify(res)

@@ -2,10 +2,9 @@ import logging
 import os
 
 import starwrap as sw
-
-from star_space import current_directory
 from sklearn.model_selection import ParameterGrid
 
+from definitions import ROOT_DIR
 
 handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -40,7 +39,7 @@ if __name__ == "__main__":
 
         arg = sw.args()
 
-        arg.trainFile = f'{current_directory}/../data/StarSpace_data/twitter_train_3M.txt'
+        arg.trainFile = f'{ROOT_DIR}/data/StarSpace_data/twitter_train_3M.txt'
         arg.trainMode = 2
         arg.thread = 40
         arg.verbose = True
@@ -61,7 +60,7 @@ if __name__ == "__main__":
         arg.normalizeText = param.get('normalizeText')
 
         log.debug("check if model exists...")
-        folder_path = f"{current_directory}/../data/StarSpace_data/models"
+        folder_path = f"{ROOT_DIR}/data/StarSpace_data/models"
 
         folder_name = f"lr_{arg.lr}_dim_{arg.dim}_dropoutRHS_{arg.dropoutRHS}_normalizeText_{arg.normalizeText}"
 
