@@ -1,10 +1,9 @@
 import logging
 import os
 
-import starwrap as sw
 from sklearn.model_selection import ParameterGrid
 
-from definitions import ROOT_DIR
+from definitions import ROOT_DIR, sw
 
 handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

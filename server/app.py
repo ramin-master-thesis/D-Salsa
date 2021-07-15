@@ -1,13 +1,13 @@
-import importlib
-import inspect
-import sys
-
 import click
 from flask import Flask, request
 from flask_cors import CORS
 
 from indexer.tweetid_content_index import TweetIdContentIndex
 from indexer.userid_tweetid_index import UserIdTweetIdIndex
+from partitioner.hash_functions.murmur2_partition import Murmur2Partition
+from partitioner.hash_functions.partition_base import PartitionBase
+from partitioner.hash_functions.single_partition import SinglePartition
+from partitioner.hash_functions.star_space_partition import StarSpacePartition
 from server.content import content
 from server.recommendation import recommendation
 from server.status import status
@@ -20,7 +20,7 @@ CORS(app)
 
 
 @click.command()
-@click.option('--partition-method', type=click.Choice(['single', 'modulo', 'murmur2', 'star_space']),
+@click.option('--partition-method', type=click.Choice(['single_partition', 'modulo', 'murmur2', 'star-space']),
               default="single",
               help='hash function used for partitioning (defaults single_partition).')
 @click.option('--partition-number', default=0, help='number of partition')
@@ -29,10 +29,15 @@ CORS(app)
 def cli(partition_method, partition_number, port, content_index):
     click.secho(f"Loading indexes for partition {partition_method} and partition(s) {partition_number}", fg='green')
 
-    m = importlib.import_module(f"partitioner.hash_functions.{partition_method}_partition")
-    partition_method_obj = inspect.getmembers(m, inspect.isclass)[1][1]
+    partition_method_obj = SinglePartition()
+
+    if partition_method == "murmur2":
+        partition_method_obj = Murmur2Partition(partition_number)
+    elif partition_method == "star-space":
+        partition_method_obj = StarSpacePartition(partition_number, None)
 
     userid_tweetid_indexer = UserIdTweetIdIndex(partitioning_method=partition_method_obj)
+    print(userid_tweetid_indexer.partitioning_method.name)
     userid_tweetid_indexer.load_indices(partition_number)
     app.config["userid_tweetid_indexer"] = userid_tweetid_indexer
 

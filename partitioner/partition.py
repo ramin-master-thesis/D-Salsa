@@ -37,23 +37,4 @@ def partition_data(partition_method: PartitionBase, file_path: str):
     else:
         df_index["partition"] = df_index.apply(lambda x: partition_method.calculate_partition(x["tweet_id"]), axis=1)
 
-    # TODO: make it optional
-    __save_partition_to_file(df_index, partition_method, os.path.dirname(file_path))
-
     return df_index
-
-
-def __save_partition_to_file(df_index, partition_method, data_folder_path):
-    partition_method_folder = f"{data_folder_path}/{partition_method.name}"
-
-    if not os.path.isdir(partition_method_folder):
-        os.mkdir(partition_method_folder)
-
-    for num in range(partition_method.partition_count):
-        partition_df = df_index[df_index["partition"] == num]
-        partition_number_folder = os.path.join(partition_method_folder, f"partition_{num}")
-        if not os.path.isdir(partition_number_folder):
-            os.mkdir(partition_number_folder)
-
-        save_path = os.path.join(partition_number_folder, "tweets.gzip")
-        partition_df.to_parquet(save_path, compression='gzip')

@@ -3,9 +3,8 @@ import os
 from glob import glob
 
 import numpy as np
-import starwrap as sw
 
-from definitions import ROOT_DIR
+from definitions import ROOT_DIR, sw
 
 star_space_data_path = os.path.join(ROOT_DIR, "data", "StarSpace_data")
 

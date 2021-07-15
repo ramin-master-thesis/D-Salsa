@@ -6,6 +6,7 @@ from pandas import DataFrame
 
 from definitions import ROOT_DIR
 from indexer.index_base import IndexBase
+from partitioner.hash_functions.partition_base import PartitionBase
 
 
 class UserIdTweetIdIndex(IndexBase):
@@ -13,6 +14,9 @@ class UserIdTweetIdIndex(IndexBase):
     right_party = "tweet_id"
     left_index_df: DataFrame
     right_index_df: DataFrame
+
+    def __init__(self, partitioning_method: PartitionBase):
+        super().__init__(partitioning_method)
 
     def create_indices(self, df: DataFrame()):
         click.echo(f"-------------{self.partitioning_method.name}---------------------")

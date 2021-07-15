@@ -12,7 +12,7 @@ deploy_container() {
   PORT=$1
   PARTITION_METHOD=$2
   PARTITION_NUMBER=$3
-  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.3 python -m server.app \
+  docker run --rm -d -p "$PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.4 python -m server.app \
   --partition-method "$PARTITION_METHOD" \
   --partition-number "$PARTITION_NUMBER" \
   --no-content-index
@@ -89,7 +89,7 @@ if $SHOULD_PARTITION ; then
     MODEL="lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_True"
     python3 -m partitioner.main "single" \
     & python3 -m partitioner.main "murmur2" -n "$NUMBER_OF_PARTITION" \
-#    & python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL
+    & python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL
 else
   printf 'Copying the partitions from the partitions folder'
   PARTITION_FOLDER="$NUMBER_OF_PARTITION"_partitions
@@ -113,13 +113,13 @@ deploy_partitions "murmur2" $START_PORT
 run_evaluation_suit "murmur2"
 prune_partitions $START_PORT
 ) &
-#sleep 15
+sleep 15
 
-### star-space
-#(
-#printf "starting StarSpace"
-#PORT=$(($START_PORT+$NUMBER_OF_PARTITION))
-#deploy_partitions "star-space" $PORT
-#run_evaluation_suit "star-space"
-#prune_partitions $PORT
-#)
+## star-space
+(
+printf "starting StarSpace"
+PORT=$(($START_PORT+$NUMBER_OF_PARTITION))
+deploy_partitions "star-space" $PORT
+run_evaluation_suit "star-space"
+prune_partitions $PORT
+)
