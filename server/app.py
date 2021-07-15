@@ -5,7 +5,6 @@ from flask_cors import CORS
 from indexer.tweetid_content_index import TweetIdContentIndex
 from indexer.userid_tweetid_index import UserIdTweetIdIndex
 from partitioner.hash_functions.murmur2_partition import Murmur2Partition
-from partitioner.hash_functions.partition_base import PartitionBase
 from partitioner.hash_functions.single_partition import SinglePartition
 from partitioner.hash_functions.star_space_partition import StarSpacePartition
 from server.content import content
