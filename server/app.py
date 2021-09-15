@@ -21,28 +21,28 @@ CORS(app)
 @click.command()
 @click.option('--partition-method', type=click.Choice(['single', 'modulo', 'murmur2', 'star-space']),
               default="single",
-              help='hash function used for partitioning (defaults single_partition).')
-@click.option('--partition-number', default=0, help='number of partition')
+              help='hash function used for partitioning (defaults single).')
+@click.option('--partition-id', default=0, help='id of partition')
 @click.option('--port', default=5000, help='port number of server')
 @click.option('--content-index/--no-content-index', default=False, help='Flag whether to load content index or not')
-def cli(partition_method, partition_number, port, content_index):
-    click.secho(f"Loading indexes for partition {partition_method} and partition(s) {partition_number}", fg='green')
+def cli(partition_method, partition_id, port, content_index):
+    click.secho(f"Loading indexes for partition {partition_method} and partition(s) {partition_id}", fg='green')
 
     partition_method_obj = SinglePartition()
 
     if partition_method == "murmur2":
-        partition_method_obj = Murmur2Partition(partition_number)
+        partition_method_obj = Murmur2Partition(partition_id)
     elif partition_method == "star-space":
-        partition_method_obj = StarSpacePartition(partition_number, None)
+        partition_method_obj = StarSpacePartition(partition_id, None)
 
     userid_tweetid_indexer = UserIdTweetIdIndex(partitioning_method=partition_method_obj)
     print(userid_tweetid_indexer.partitioning_method.name)
-    userid_tweetid_indexer.load_indices(partition_number)
+    userid_tweetid_indexer.load_indices(partition_id)
     app.config["userid_tweetid_indexer"] = userid_tweetid_indexer
 
     if content_index:
         tweetid_content_indexer = TweetIdContentIndex(partitioning_method=partition_method_obj)
-        tweetid_content_indexer.load_indices(partition_number)
+        tweetid_content_indexer.load_indices(partition_id)
         app.config["tweetid_content_indexer"] = tweetid_content_indexer
 
     app.run(host="0.0.0.0", port=port, debug=False)

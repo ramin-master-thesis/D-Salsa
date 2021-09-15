@@ -71,10 +71,9 @@ if __name__ == "__main__":
         if not os.path.isdir(model_location):
             log.info("model does not exist...")
             os.mkdir(model_location)
-        else:
-            if os.path.isfile(model_file_path):
-                log.info("model already exists...")
-                continue
+        elif os.path.isfile(model_file_path):
+            log.info("model already exists...")
+            continue
 
         log.info("Initializing StarSpace...")
         sp = sw.starSpace(arg)

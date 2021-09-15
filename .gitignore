@@ -1,6 +1,8 @@
 ### Custom Ignored Files ###
 data/
 star_space/src
+!data/StarSpace_data
+!data/StarSpace_data/models
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/flask,python,pycharm+all

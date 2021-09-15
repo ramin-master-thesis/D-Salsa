@@ -35,7 +35,7 @@ def single(ctx):
 
 
 @cli.command()
-@click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
+@click.option('-n', '--partition-number', default=2, help='total number of partitions (default 2)')
 @click.pass_context
 def modulo(ctx, partition_number):
     partition_method = ModuloPartition(partition_number)
@@ -43,7 +43,7 @@ def modulo(ctx, partition_number):
 
 
 @cli.command()
-@click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
+@click.option('-n', '--partition-number', default=2, help='total number of partitions (default 2)')
 @click.pass_context
 def murmur2(ctx, partition_number):
     partition_method = Murmur2Partition(partition_number)
@@ -51,7 +51,7 @@ def murmur2(ctx, partition_number):
 
 
 @cli.command()
-@click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
+@click.option('-n', '--partition-number', default=2, help='total number of partitions (default 2)')
 @click.option('-m', '--model-folder', required=True, help="folder name of the model parameter")
 @click.pass_context
 # Example: -m "lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_False"
