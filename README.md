@@ -1,6 +1,6 @@
-# SALSA
+# D-SALSA
 
-Piece of code simulating the SALSA algorithm and a simple indexing system for traversing the bipartite graph.
+Piece of code simulating the D(istribute)-SALSA algorithm and a simple indexing system for traversing the bipartite graph.
 
 ## Prerequisites
 
