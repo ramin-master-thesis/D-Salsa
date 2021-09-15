@@ -8,6 +8,8 @@ from partitioner.hash_functions.partition_base import PartitionBase
 class IndexBase(ABC):
     left_party: str
     right_party: str
+    left_index_df: DataFrame
+    right_index_df: DataFrame
 
     def __init__(self, partitioning_method: PartitionBase):
         super().__init__()

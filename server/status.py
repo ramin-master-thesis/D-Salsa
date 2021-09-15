@@ -60,9 +60,6 @@ def get_user_interactions(node_id: int):
 
     indexer = current_app.config.get("tweetid_content_indexer")
     content_graph = ContentGraph(indexer)
-    res = []
-
-    for identifier in neighbors:
-        res.append(content_graph.get_content_by_id(identifier))
+    res = [content_graph.get_content_by_id(identifier) for identifier in neighbors]
 
     return jsonify(res)

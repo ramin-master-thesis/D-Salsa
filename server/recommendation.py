@@ -32,7 +32,7 @@ def salsa(user_id: int):
         description: A list of top K recommendations
     """
     limit, reset_probability, walks, walks_length = __init_parameters()
-    with_content = False if request.args.get('content') == 'false' else True
+    with_content = request.args.get('content') != 'false'
 
     recommendations = Salsa(user_id,
                             limit,
@@ -43,15 +43,11 @@ def salsa(user_id: int):
     results = []
 
     if with_content:
-        results = []
         indexer = current_app.config.get("tweetid_content_indexer")
-        for r in recommendations:
-            results.append(
-                {"id": r[0],
-                 "content": ContentGraph(indexer).get_content_by_id(r[0]),
-                 "hit": r[1]
-                 }
-            )
+        results = [{"id": r[0],
+                    "content": ContentGraph(indexer).get_content_by_id(r[0]),
+                    "hit": r[1]
+                    } for r in recommendations]
         return jsonify(results)
 
     for r in recommendations:
@@ -66,8 +62,8 @@ def salsa(user_id: int):
 
 @recommendation.route('/salsa/tweet/<int:tweet_id>', methods=['GET'])
 def salsa_for_tweets(tweet_id: int):
-    with_content = False if request.args.get('content') == 'false' else True
-    should_include_first = False if request.args.get('first') == 'false' else True
+    with_content = request.args.get('content') != 'false'
+    should_include_first = request.args.get('first') != 'false'
     limit, reset_probability, walks, walks_length = __init_parameters()
 
     recommendations = Salsa(tweet_id,
@@ -82,9 +78,15 @@ def salsa_for_tweets(tweet_id: int):
 
     if with_content:
         indexer = current_app.config.get("tweetid_content_indexer")
-        res = []
-        for r in recommendations:
-            res.append({"id": r[0], "content": ContentGraph(indexer).get_content_by_id(r[0]), "hit": r[1]})
+        res = [
+            {
+                "id": r[0],
+                "content": ContentGraph(indexer).get_content_by_id(r[0]),
+                "hit": r[1],
+            }
+            for r in recommendations
+        ]
+
         return jsonify(res)
 
     return jsonify(recommendations)

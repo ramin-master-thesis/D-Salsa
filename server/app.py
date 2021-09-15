@@ -19,7 +19,7 @@ CORS(app)
 
 
 @click.command()
-@click.option('--partition-method', type=click.Choice(['single_partition', 'modulo', 'murmur2', 'star-space']),
+@click.option('--partition-method', type=click.Choice(['single', 'modulo', 'murmur2', 'star-space']),
               default="single",
               help='hash function used for partitioning (defaults single_partition).')
 @click.option('--partition-number', default=0, help='number of partition')
@@ -48,13 +48,6 @@ def cli(partition_method, partition_number, port, content_index):
     app.run(host="0.0.0.0", port=port, debug=False)
 
 
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-
-
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
     shutdown_server()
@@ -64,6 +57,13 @@ def shutdown():
 @app.route('/healthy', methods=['GET'])
 def health_check():
     return 'server is healthy'
+
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
 
 
 if __name__ == "__main__":

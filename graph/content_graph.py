@@ -13,7 +13,6 @@ class ContentGraph:
 
     def get_content_by_id(self, index: int):
         try:
-            content = self.indexer.content_index_df._get_value(index, CONTENT)
-            return content
+            return self.indexer.content_index_df._get_value(index, CONTENT)
         except KeyError:
             return None

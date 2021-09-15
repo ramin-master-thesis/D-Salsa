@@ -1,26 +1,13 @@
 #!/bin/bash
 
-trap _ctrl_c INT
+#!/bin/bash
+PARTITION_COUNT=${1:-2}
+START_PORT=${2:-5001}
+PARTITION_METHOD=${3:-"murmur2"}
 
-_ctrl_c() {
-  echo "** graceful shutdown"
-  curl http://localhost:5001/shutdown
-  curl http://localhost:5003/shutdown
-  curl http://localhost:5002/shutdown
-  curl http://localhost:5005/shutdown
-  curl http://localhost:5004/shutdown
-  curl http://localhost:5006/shutdown
-  curl http://localhost:5007/shutdown
-  printf "\n"
-}
 
-### single_partition
-python3 -m server.app --partition-method single_partition --port 5001 &
-
-### murmur2
-python -m server.app --partition-method murmur2 --partition-number 0 --port 5002 &
-python -m server.app --partition-method murmur2 --partition-number 1 --port 5003 &
-
-### StarSpace
-python -m server.app --partition-method StarSpace --partition-number 0 --port 5004 &
-python -m server.app --partition-method StarSpace --partition-number 1 --port 5005
+for ((i = 0; i < PARTITION_COUNT; ++i)); do
+# shellcheck disable=SC2046
+docker run --rm -d -p "$START_PORT":5000 -v $(pwd)/data:/app/data raminqaf/salsa:1.4 python -m server.app --content-index --partition-method "$PARTITION_METHOD" --partition-number "$i"
+START_PORT=$((START_PORT+1))
+done

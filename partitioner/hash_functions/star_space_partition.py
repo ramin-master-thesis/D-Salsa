@@ -32,9 +32,7 @@ class StarSpacePartition(PartitionBase):
 
         number_of_bits = int(math.log2(self.partition_count))
         bits = bits[:number_of_bits].astype(int)
-        partition = int("".join(str(i) for i in bits), 2)
-
-        return partition
+        return int("".join(str(i) for i in bits), 2)
 
     @staticmethod
     def __normalize_text(text: str):

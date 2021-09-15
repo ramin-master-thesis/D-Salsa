@@ -54,7 +54,7 @@ def murmur2(ctx, partition_number):
 @click.option('-n', '--partition-number', default=2, help='number of partitions (default 2)')
 @click.option('-m', '--model-folder', required=True, help="folder name of the model parameter")
 @click.pass_context
-# Example: -m "lr_0.01_dim_100_dropoutRHS_0.5_normalizeText_True"
+# Example: -m "lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_False"
 def star_space(ctx, partition_number, model_folder):
     partition_method = StarSpacePartition(partition_number, model_folder)
     __creat_indices(partition_method, ctx.obj['should_create_content'], ctx.obj['path_to_file'])

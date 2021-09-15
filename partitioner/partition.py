@@ -13,7 +13,7 @@ def partition_data(partition_method: PartitionBase, file_path: str):
         f"Starting to partition data for partition method {partition_method.name} and num of partition(s) "
         f"{partition_method.partition_count}")
 
-    is_tsv = True if os.path.splitext(file_path)[1] == ".tsv" else False
+    is_tsv = os.path.splitext(file_path)[1] == ".tsv"
 
     if is_tsv:
         df_index = pd.read_csv(file_path, sep="\t", usecols=[0, 1, 4],

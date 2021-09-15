@@ -86,7 +86,7 @@ CURRENT_DIRECTORY=$(pwd)
 ### Partition and Index Data
 if $SHOULD_PARTITION ; then
     printf 'Partitioning the data\n'
-    MODEL="lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_True"
+    MODEL="lr_0.01_dim_300_dropoutRHS_0.8_normalizeText_False"
     python3 -m partitioner.main "single" \
     & python3 -m partitioner.main "murmur2" -n "$NUMBER_OF_PARTITION" \
     & python3 -m partitioner.main "star-space" -n "$NUMBER_OF_PARTITION" -m $MODEL

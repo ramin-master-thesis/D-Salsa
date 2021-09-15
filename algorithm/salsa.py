@@ -67,7 +67,7 @@ class Salsa:
             edges = get_node_neighbors(node)
 
             if len(edges) > 0:
-                for i in range(walks):
+                for _ in range(walks):
                     random_position = randrange(0, len(edges))
                     edge = edges[random_position]
                     current_other_side_node_visits[edge] = current_other_side_node_visits.get(edge, 0) + 1
@@ -89,7 +89,7 @@ class Salsa:
             edges = get_node_neighbors(node)
 
             if len(edges) > 0:
-                for i in range(visits):
+                for _ in range(visits):
                     random_position = randrange(0, len(edges))
                     edge = edges[random_position]
                     current_other_side_node_visits[edge] = current_other_side_node_visits.get(edge, 0) + 1
