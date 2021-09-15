@@ -8,9 +8,11 @@ Piece of code simulating the SALSA algorithm and a simple indexing system for tr
 * Create a python virtual environment and run `pip install -r requirements.txt`. This will install all the necessary
   dependencies.
 * The crawled datasets (train and test) plus the generated train dataset can be
-  found [here](https://mega.nz/folder/BQhzVQBD#_7EQ9ujrU2irq-BRfNOUdw). Place the dataset in the `data` folder.
-* The dataset should be in a TSV or CSV format.
-* Here is an example how the dataset looks like:
+  found [here](https://mega.nz/folder/BQhzVQBD#_7EQ9ujrU2irq-BRfNOUdw). Place the test dataset in the `data` folder.
+* Create a `StarSpace_data` folder inside the `data` folder and move the train dataset there.
+* Inside the `StarSpace_data` folder create a `models` directory. You need to place your trained model folder(s) here.
+* The dataset(s) should be in a TSV or CSV format.
+* Here is an example how the dataset should look like:
 
 ```tsv
 34743251   1336849897987796992    0  1607564827000  Starship landing flip maneuver https://t.co/QuD9HwZ9CX
