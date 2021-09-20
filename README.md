@@ -56,7 +56,7 @@ Commands:
 Choosing the `murmur2` segmentation method:
 
 ```shell
-Usage: main.py murmur2 [OPTIONS]
+python3 -m partitioner.main murmur2 [OPTIONS]
 
 Options:
   -n, --partition-number INTEGER  total number of partitions (default 2)
@@ -67,8 +67,7 @@ Options:
 Choosing the `star-space` partitioning method:
 
 ```shell
-python3 -m partitioner.main star-space --help          
-Usage: main.py star-space [OPTIONS]
+python3 -m partitioner.main star-space [OPTIONS]
 
 Options:
   -n, --partition-number INTEGER  total number of partitions (default 2)
