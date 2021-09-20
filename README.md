@@ -1,6 +1,6 @@
 # D-SALSA
 
-Piece of code simulating the D(istribute)-SALSA algorithm and a simple indexing system for traversing the bipartite graph.
+Piece of code simulating the D(istributed)-SALSA algorithm and a simple indexing system for traversing the bipartite graph.
 
 ## Prerequisites
 
@@ -80,7 +80,7 @@ Options:
 ```
 
 The `--model-folder` option is required for partitioning with StarSpace. This option determines the model that needs to
-be loaded in memory. The folder should be inside the following path: `data> StarSpace_data> models`.
+be loaded in memory. The folder should be inside the following path: `data > StarSpace_data > models`.
 <br/> After the partitioning and indexing finishes, you can find it in the `data` folder. Depending on the partitioning
 method and total count of partitions chosen, the number of folders varies.
 
